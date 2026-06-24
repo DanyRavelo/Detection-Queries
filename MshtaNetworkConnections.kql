@@ -1,0 +1,5 @@
+DeviceNetworkEvents
+| where InitiatingProcessFileName =~ "mshta.exe"
+| where RemoteIPType == "Public"
+| where InitiatingProcessCommandLine has_any ("http://","https://",".hta","javascript:","vbscript:")
+| project Timestamp, DeviceName, InitiatingProcessAccountUpn, InitiatingProcessParentFileName, InitiatingProcessCommandLine, RemoteUrl, RemoteIP

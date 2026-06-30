@@ -1,0 +1,21 @@
+let VulnerableDevices =
+    DeviceTvmSoftwareVulnerabilities
+    | where CveId == "CVE-2026-41089"
+    | distinct DeviceId;
+let ExposedDevices =
+    DeviceInfo
+    | where IsInternetFacing == true and isnotempty(PublicIP)
+    | where DeviceId in (VulnerableDevices);
+let InboundRPC =
+    DeviceEvents
+    | where ActionType == "InboundRemoteRpcCall"
+    | extend Fields = parse_json(AdditionalFields)
+    | where tostring(Fields.RpcInterfaceUuid) =~ "12345678-1234-abcd-ef00-01234567cffb";
+DeviceNetworkEvents
+| where DeviceId in (ExposedDevices)
+| where ActionType == "InboundConnectionAccepted"
+| where not(ipv4_is_private(RemoteIP))
+| where LocalPort == 445
+| union InboundRPC
+| project TimeGenerated, DeviceId, DeviceName, RemoteIP, LocalPort, ActionType
+| sort by TimeGenerated desc

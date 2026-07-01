@@ -1,0 +1,17 @@
+CloudAppEvents
+| where Timestamp > ago(7d)
+| where ActionType == "CopilotInteraction"
+| extend EventData = RawEventData.CopilotEventData
+| extend 
+    AppHost = tostring(EventData.AppHost),
+    ThreadId = tostring(EventData.ThreadId),
+    Messages = EventData.Messages,
+    Resources = EventData.AccessedResources
+| mv-expand Messages
+| extend 
+    MessageId = tostring(Messages.Id),
+    isPrompt = tobool(Messages.isPrompt),
+    JailbreakDetected = tobool(Messages.JailbreakDetected)
+| where isPrompt == true and JailbreakDetected == true
+| project Timestamp, AccountObjectId, AccountDisplayName, IsExternalUser, AppHost, ThreadId, MessageId, Resources, IPAddress = tostring(RawEventData.ClientIP)
+| order by Timestamp desc

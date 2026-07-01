@@ -1,0 +1,16 @@
+let Lookback = 1d;
+EmailAttachmentInfo
+| where TimeGenerated > ago(Lookback)
+| where FileType =~ "pdf"
+| join kind=inner (
+    EmailUrlInfo
+    | where TimeGenerated > ago(Lookback)
+    | where UrlCategory =~ "QRCode" or UrlLocation =~ "QRCode"
+) on NetworkMessageId
+| join kind=inner (
+    EmailEvents
+    | where TimeGenerated > ago(Lookback)
+    | where EmailDirection =~ "Inbound"
+) on NetworkMessageId
+| project Timestamp = TimeGenerated, NetworkMessageId, SenderFromAddress, SenderDisplayName, SenderIPv4, RecipientEmailAddress, Subject, FileName, SHA256, Url, UrlDomain, ThreatTypes, DetectionMethods, DeliveryAction, DeliveryLocation
+| sort by Timestamp desc

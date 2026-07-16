@@ -5,7 +5,7 @@ EmailAttachmentInfo
 | join kind=inner (
     EmailUrlInfo
     | where TimeGenerated > ago(Lookback)
-    | where UrlCategory =~ "QRCode" or UrlLocation =~ "QRCode"
+    | where UrlLocation =~ "QRCode"
 ) on NetworkMessageId
 | join kind=inner (
     EmailEvents

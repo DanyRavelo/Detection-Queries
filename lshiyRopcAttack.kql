@@ -10,5 +10,5 @@ union SigninLogs, AADNonInteractiveUserSignInLogs
 | where ipv6_is_in_range(IPAddress, "2a0a:d683::/32") // IP range where this attack was initially observed
     or AutonomousSystemNumber == "955" // LSHIY's other known ASN - defensive inclusion
     or ConditionalAccessStatus in ("notApplied", "failure") // CA didn't cover/fire for this ROPC sign-in - the core gap this campaign exploits, regardless of source IP
-| project TimeGenerated, UserPrincipalName, IPAddress, AppDisplayName, ResultType, ResultDescription, ConditionalAccessStatus, AuthenticationRequirement, Location, LocationDetails
+| project TimeGenerated, UserPrincipalName, IPAddress, AppDisplayName, ResultType, ResultDescription, ConditionalAccessStatus, AuthenticationRequirement, Location
 | order by TimeGenerated desc

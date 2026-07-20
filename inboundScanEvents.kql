@@ -1,0 +1,6 @@
+DeviceNetworkEvents
+| where ActionType == "InboundInternetScanInspected"
+| where Timestamp > ago(7d)
+| project Timestamp, DeviceName, LocalIP, LocalPort, RemoteIP, RemotePort, RemoteIP_Country = tostring(geo_info_from_ip_address(RemoteIP).country)
+// | summarize ScanCount = count() by RemoteIP
+// | sort by ScanCount desc

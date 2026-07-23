@@ -1,5 +1,5 @@
 DeviceTvmSoftwareVulnerabilities
 | mv-expand CveTags
 | where CveTags == 'Zero day'
-| summarize Count=count() by CveId, OSPlatform, , VulnerabilitySeverityLevel,
+| summarize Count=count() by CveId, OSPlatform, , VulnerabilitySeverityLevel
 | sort by Count desc 
